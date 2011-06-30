@@ -39,7 +39,7 @@ physics.setGravity( app_globals.gravity.x, app_globals.gravity.y );
 local function createBall( ball_count )
 
 	-- ** create new instance of tennis ball ** --
-	local tennis_ball = display.newImage( "images/bg_tennis_ball_sm.png" );
+	local tennis_ball = display.newImage( imgs.fetchImagePath( "bg_tennis_ball.png" ) );
 	
 	-- ** set tennis ball id ** --
 	tennis_ball.tb_id = "tb_" .. ( ball_count + 1 );
@@ -75,7 +75,6 @@ local function spawnBall()
 				createBall( app_globals.total_balls );
 			end,
 		1 );
-		-- local new_ball = createBall( app_globals.total_balls );
 	end
 end
 
@@ -102,18 +101,23 @@ end
 Runtime:addEventListener( "collision", ballBounce );
 
 -- ** create floor (for physics) ** --
-floor = display.newRect( 0, 430, 320, 50 );
+floor = display.newRect( 0, ( app_globals.is_high_res and 860 or 430 ), ( app_globals.is_high_res and 640 or 320 ), ( app_globals.is_high_res and 100 or 50 ) );
 floor.alpha = 0;
 	
 -- adds phyiscs properties to the newly added floor
 physics.addBody( floor, "static", { bounce = 0.4, density = 1.0 } );
 
 -- ** add ant to stage (global access) ** --
-ant_player = display.newImage( "images/bg_ant.png" );
+ant_player = display.newImage( imgs.fetchImagePath( "bg_ant.png" ) );
 
 	-- ** set in middle of screen (on the floor) ** --
-	ant_player.x = 160;
-	ant_player.y = 405;
+	if( app_globals.is_high_res ) then
+		ant_player.x = 320;
+		ant_player.y = 810;
+	else
+		ant_player.x = 160;
+		ant_player.y = 405;
+	end
 	
 	-- ** add physics to ant ** --
 	physics.addBody( ant_player, "kinematic" );
@@ -121,17 +125,19 @@ ant_player = display.newImage( "images/bg_ant.png" );
 -- ** game controls ** --
 	
 	-- ** interpret touch control ** --
+	local distance_traveled = ( app_globals.is_high_res and 60 or 30 );
+	
 	local moveLeft = function( e )
 	
 		-- ** move 30px to the left ** --
-		transition.to( ant_player, { time = 100, x= ( ant_player.x - 30 ) } );
+		transition.to( ant_player, { time = 100, x= ( ant_player.x - distance_traveled ) } );
 	
 	end
 	
 	local moveRight = function( e )
 	
-		-- ** move 30px to the right ** --
-		transition.to( ant_player, { time = 100, x= ( ant_player.x + 30 ) } );
+		-- ** move 30/60px to the right ** --
+		transition.to( ant_player, { time = 100, x= ( ant_player.x + distance_traveled ) } );
 	
 	end
 	
